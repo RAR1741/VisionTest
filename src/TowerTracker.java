@@ -1,5 +1,14 @@
+import java.awt.FlowLayout;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -14,13 +23,6 @@ import org.opencv.videoio.VideoCapture;
 
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
-/**
- * 
- * @author Elijah Kaufman
- * @version 1.0
- * @description Uses opencv and network table 3.0 to detect the vision targets
- *
- */
 public class TowerTracker {
 
 	/**
@@ -33,17 +35,17 @@ public class TowerTracker {
 	}
 //	constants for the color rbg values
 	public static final Scalar 
-	RED = new Scalar(0, 0, 255),
-	BLUE = new Scalar(255, 0, 0),
-	GREEN = new Scalar(0, 255, 0),
-	BLACK = new Scalar(0,0,0),
-	YELLOW = new Scalar(0, 255, 255),
-//	these are the threshold values in order 
-	LOWER_BOUNDS = new Scalar(58,0,109),
-	UPPER_BOUNDS = new Scalar(93,255,240);
+		RED = new Scalar(0, 0, 255),
+		BLUE = new Scalar(255, 0, 0),
+		GREEN = new Scalar(0, 255, 0),
+		BLACK = new Scalar(0,0,0),
+		YELLOW = new Scalar(0, 255, 255),
+//		these are the threshold values in order 
+		LOWER_BOUNDS = new Scalar(58,0,109),
+		UPPER_BOUNDS = new Scalar(93,255,240);
 
 //	the size for resizing the image
-	public static final Size resize = new Size(320,240);
+	public static final Size resize = new Size(640,480);
 
 //	ignore these
 	public static VideoCapture videoCapture;
@@ -56,17 +58,17 @@ public class TowerTracker {
 	public static final int TOP_CAMERA_HEIGHT = 32;
 
 //	camera details, can usually be found on the data sheets of the camera
-	public static final double VERTICAL_FOV  = 51;
-	public static final double HORIZONTAL_FOV  = 67;
+	public static final double VERTICAL_FOV  = 55;
+	public static final double HORIZONTAL_FOV  = 55;
 	public static final double CAMERA_ANGLE = 10;
 
 	public static boolean shouldRun = true;
+	
+//	Display variables
+	public static JFrame frame;
+	public static JLabel lbl;
+	public static ImageIcon image;
 
-	/**
-	 * 
-	 * @param args command line arguments
-	 * just the main loop for the program and the entry points
-	 */
 	public static void main(String[] args) {
 		matOriginal = new Mat();
 		matHSV = new Mat();
@@ -74,50 +76,48 @@ public class TowerTracker {
 		clusters = new Mat();
 		matHeirarchy = new Mat();
 		NetworkTable table = NetworkTable.getTable("SmartDashboard");
+		
+	    frame=new JFrame();
+	    frame.setLayout(new FlowLayout());        
+	    frame.setSize(640, 480);     
+//	    lbl=new JLabel();
+	    frame.setVisible(true);
+		
 //		main loop of the program
 		while(shouldRun){
 			try {
 //				opens up the camera stream and tries to load it
-				videoCapture = new VideoCapture("http://10.17.81.11/jpg/image.jpg");
-//				replaces the ##.## with your team number
+				System.out.println("Initializing camera...");
+				videoCapture = new VideoCapture();
+				
 				System.out.println("Opening stream...");
-//				Thread.sleep(1000);
-//				videoCapture.open("http://10.17.81.11/mjpg/video.mjpg");
+//				videoCapture.open("http://10.17.81.11/jpg/image.jpg");
+//				OLD CODE THAT USES THE VIDEO STREAM
+//				WE MIGHT TR THIS AGAIN LATER
+				videoCapture.open("http://10.17.81.11/mjpg/video.mjpg");
+				
 				System.out.println("Checking connection...");
-//				Thread.sleep(1000);
-//				Example
-//				cap.open("http://10.30.19.11/mjpg/video.mjpg");
 //				wait until it is opened
-				int test = 0;
-				while(!videoCapture.isOpened() && test < 100){
-//					Thread.sleep(50);
-//					System.out.println("|||BEEP|||");
-//					Thread.sleep(250);
-//					System.out.println("|||BOOP|||");
-//					System.out.println(test);
-//					System.out.println(videoCapture.isOpened());
-//					test++;
-				}
-				System.out.println(videoCapture.isOpened());				
-//				time to actually process the acquired images
+				while(!videoCapture.isOpened()){}
+				
+				System.out.println("Opened successfully...");
+				
+//				Actually process the image
 				processImage();
-//				System.out.println("Finished processing...");
+				System.out.println("Finished processing...");
 			} catch (Exception e) {
-				System.out.println("Uh oh...1");
+				System.out.println("Uh oh...");
 				e.printStackTrace();
-				System.out.println("Uh oh...2");
-//				break;
+				break;
 			}
 		}
 //		make sure the java process quits when the loop finishes
 		System.out.println("Releasing video stream...");
 		videoCapture.release();
+		System.out.println("Exiting application...");
 		System.exit(0);
 	}
-	/**
-	 * 
-	 * reads an image from a live image capture and outputs information to the SmartDashboard or a file
-	 */
+
 	public static void processImage(){
 		System.out.println("Processing...");
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
@@ -129,7 +129,8 @@ public class TowerTracker {
 		while(FrameCount < 1){
 			contours.clear();
 //			capture from the axis camera
-			System.out.println("Read:"+videoCapture.read(matOriginal));
+//			System.out.println("Read:"+videoCapture.read(matOriginal));
+			videoCapture.read(matOriginal);
 //			captures from a static file for testing
 //			matOriginal = Imgcodecs.imread("original.png");
 			
@@ -152,29 +153,47 @@ public class TowerTracker {
 			}
 			for(MatOfPoint mop : contours){
 				Rect rec = Imgproc.boundingRect(mop);
-				Imgproc.rectangle(matOriginal, rec.br(), rec.tl(), BLACK);
+				Imgproc.rectangle(matOriginal, rec.br(), rec.tl(), RED);
 			}
-//			if there is only 1 target, then we have found the target we want
-			if(contours.size() == 1){
-				Rect rec = Imgproc.boundingRect(contours.get(0));
-//				"fun" math brought to you by miss daisy (team 341)!
+			
+//			Loop over each contour
+			for (int p = 0; p < contours.size(); p++) {
+				Rect rec = Imgproc.boundingRect(contours.get(p));
+
 				y = rec.br().y + rec.height / 2;
 				y= -((2 * (y / matOriginal.height())) - 1);
 				distance = (TOP_TARGET_HEIGHT - TOP_CAMERA_HEIGHT) / 
 						Math.tan((y * VERTICAL_FOV / 2.0 + CAMERA_ANGLE) * Math.PI / 180);
-//				angle to target...would not rely on this
+				
+//				Angle to target
 				targetX = rec.tl().x + rec.width / 2;
 				targetX = (2 * (targetX / matOriginal.width())) - 1;
 				azimuth = normalize360(targetX*HORIZONTAL_FOV /2.0 + 0);
-//				drawing info on target
-				Point center = new Point(rec.br().x-rec.width / 2 - 15,rec.br().y - rec.height / 2);
-				Point centerw = new Point(rec.br().x-rec.width / 2 - 15,rec.br().y - rec.height / 2 - 20);
-				Imgproc.putText(matOriginal, ""+(int)distance, center, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
-				Imgproc.putText(matOriginal, ""+(int)azimuth, centerw, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
+				
+//				Draw values on target
+				Point center = new Point(rec.br().x,rec.br().y+10);
+				Point centerw = new Point(rec.br().x,rec.br().y+25);
+				Imgproc.putText(matOriginal, ""+(int)distance+"\"", center, Core.FONT_HERSHEY_PLAIN, 1, RED);
+				Imgproc.putText(matOriginal, ""+(int)azimuth, centerw, Core.FONT_HERSHEY_PLAIN, 1, GREEN);
 			}
-//			output an image for debugging
-			Imgcodecs.imwrite("output.png", matOriginal);
-			FrameCount++;
+			
+//			Output an image for debugging
+//			Imgcodecs.imwrite("output.png", matOriginal);
+//			FrameCount++;
+			
+
+			frame.getContentPane().removeAll();
+			image = new ImageIcon(createAwtImage(matOriginal));
+			JLabel label1 = new JLabel("", image, JLabel.CENTER);
+			frame.getContentPane().add(label1);
+			
+			SwingUtilities.updateComponentTreeUI(frame);
+//			frame.invalidate();
+//			frame.validate();
+//			frame.repaint();
+			
+//			lbl.setIcon(image);
+//		    frame.add(lbl);
 		}
 		shouldRun = false;
 	}
@@ -182,14 +201,34 @@ public class TowerTracker {
 	 * @param angle a nonnormalized angle
 	 */
 	public static double normalize360(double angle){
-		while(angle >= 360.0)
-		{
-			angle -= 360.0;
-		}
-		while(angle < 0.0)
-		{
-			angle += 360.0;
-		}
+//		while(angle >= 360.0)
+//		{
+//			angle -= 360.0;
+//		}
+//		while(angle < 0.0)
+//		{
+//			angle += 360.0;
+//		}
 		return angle;
+	}
+	
+	public static BufferedImage createAwtImage(Mat mat) {
+
+	    int type = 0;
+	    if (mat.channels() == 1) {
+	        type = BufferedImage.TYPE_BYTE_GRAY;
+	    } else if (mat.channels() == 3) {
+	        type = BufferedImage.TYPE_3BYTE_BGR;
+	    } else {
+	        return null;
+	    }
+
+	    BufferedImage image = new BufferedImage(mat.width(), mat.height(), type);
+	    WritableRaster raster = image.getRaster();
+	    DataBufferByte dataBuffer = (DataBufferByte) raster.getDataBuffer();
+	    byte[] data = dataBuffer.getData();
+	    mat.get(0, 0, data);
+
+	    return image;
 	}
 }
