@@ -78,9 +78,8 @@ public class TowerTracker {
 		NetworkTable table = NetworkTable.getTable("SmartDashboard");
 		
 	    frame=new JFrame();
-	    frame.setLayout(new FlowLayout());        
-	    frame.setSize(640, 480);     
-//	    lbl=new JLabel();
+	    frame.setLayout(new FlowLayout());
+	    frame.setSize(640, 480);
 	    frame.setVisible(true);
 		
 //		main loop of the program
@@ -91,9 +90,6 @@ public class TowerTracker {
 				videoCapture = new VideoCapture();
 				
 				System.out.println("Opening stream...");
-//				videoCapture.open("http://10.17.81.11/jpg/image.jpg");
-//				OLD CODE THAT USES THE VIDEO STREAM
-//				WE MIGHT TR THIS AGAIN LATER
 				videoCapture.open("http://10.17.81.11/mjpg/video.mjpg");
 				
 				System.out.println("Checking connection...");
@@ -122,24 +118,21 @@ public class TowerTracker {
 		System.out.println("Processing...");
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		double x,y,targetX,targetY,distance,azimuth;
-//		frame counter
-		int FrameCount = 0;
 		long before = System.currentTimeMillis();
 //		only run for the specified time
-		while(FrameCount < 1){
+		while(true){
 			contours.clear();
-//			capture from the axis camera
-//			System.out.println("Read:"+videoCapture.read(matOriginal));
+//			Capture image from the axis camera
 			videoCapture.read(matOriginal);
-//			captures from a static file for testing
+			
+//			Load image from a static file for testing
 //			matOriginal = Imgcodecs.imread("original.png");
 			
 			Imgproc.cvtColor(matOriginal,matHSV,Imgproc.COLOR_BGR2HSV);
 			Core.inRange(matHSV, LOWER_BOUNDS, UPPER_BOUNDS, matThresh);
 			Imgproc.findContours(matThresh, contours, matHeirarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
-//			make sure the contours that are detected are at least 20x20 
-//			pixels with an area of 400 and an aspect ration greater then 1
+//			Make sure the contours that are detected are at least 25x25 pixels and an aspect ratio greater then 1
 			for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
 				MatOfPoint matOfPoint = (MatOfPoint) iterator.next();
 				Rect rec = Imgproc.boundingRect(matOfPoint);
@@ -151,6 +144,8 @@ public class TowerTracker {
 				if(aspect < 1.0)
 					iterator.remove();
 			}
+			
+//			Draw the contour rectangles on the material
 			for(MatOfPoint mop : contours){
 				Rect rec = Imgproc.boundingRect(mop);
 				Imgproc.rectangle(matOriginal, rec.br(), rec.tl(), RED);
@@ -179,7 +174,6 @@ public class TowerTracker {
 			
 //			Output an image for debugging
 //			Imgcodecs.imwrite("output.png", matOriginal);
-//			FrameCount++;
 			
 
 			frame.getContentPane().removeAll();
@@ -188,14 +182,7 @@ public class TowerTracker {
 			frame.getContentPane().add(label1);
 			
 			SwingUtilities.updateComponentTreeUI(frame);
-//			frame.invalidate();
-//			frame.validate();
-//			frame.repaint();
-			
-//			lbl.setIcon(image);
-//		    frame.add(lbl);
 		}
-		shouldRun = false;
 	}
 	/**
 	 * @param angle a nonnormalized angle
