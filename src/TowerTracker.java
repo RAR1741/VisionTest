@@ -2,6 +2,7 @@ import java.awt.FlowLayout;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -17,7 +18,6 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
@@ -31,7 +31,7 @@ public class TowerTracker {
 	static{ 
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		NetworkTable.setClientMode();
-		NetworkTable.setIPAddress("roborio-1781.local");
+		NetworkTable.setIPAddress("roborio-1781-frc.local");
 	}
 //	constants for the color rbg values
 	public static final Scalar 
@@ -43,16 +43,21 @@ public class TowerTracker {
 //		these are the threshold values in order 
 		LOWER_BOUNDS = new Scalar(58,0,109),
 		UPPER_BOUNDS = new Scalar(93,255,240);
+	
+//		Original color values
+//		LOWER_BOUNDS = new Scalar(58,0,109),
+//		UPPER_BOUNDS = new Scalar(93,255,240);
 
 //	the size for resizing the image
 	public static final Size resize = new Size(640,480);
 
 //	ignore these
 	public static VideoCapture videoCapture;
-	public static Mat matOriginal, matHSV, matThresh, clusters, matHeirarchy;
+	public static Mat matInput, matOriginal, matHSV, matThresh, clusters, matHeirarchy;
+	public static NetworkTable table;
 
 //	Constants for known variables
-//	the height to the top of the target in first stronghold is 97 inches	
+//	the height to the top of the target is 97 inches	
 	public static final int TOP_TARGET_HEIGHT = 97;
 //	the physical height of the camera lens
 	public static final int TOP_CAMERA_HEIGHT = 32;
@@ -75,11 +80,11 @@ public class TowerTracker {
 		matThresh = new Mat();
 		clusters = new Mat();
 		matHeirarchy = new Mat();
-		NetworkTable table = NetworkTable.getTable("SmartDashboard");
+		table = NetworkTable.getTable("Targeting");
 		
 	    frame=new JFrame();
 	    frame.setLayout(new FlowLayout());
-	    frame.setSize(640, 480);
+	    frame.setSize(1350, 1000);
 	    frame.setVisible(true);
 		
 //		main loop of the program
@@ -118,17 +123,21 @@ public class TowerTracker {
 		System.out.println("Processing...");
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		double x,y,targetX,targetY,distance,azimuth;
-		long before = System.currentTimeMillis();
+		String output = new String();
 //		only run for the specified time
 		while(true){
+//			Clear variables from previous loop
 			contours.clear();
+			output = "";
+			
 //			Capture image from the axis camera
 			videoCapture.read(matOriginal);
+			matInput = matOriginal.clone();
 			
 //			Load image from a static file for testing
 //			matOriginal = Imgcodecs.imread("original.png");
 			
-			Imgproc.cvtColor(matOriginal,matHSV,Imgproc.COLOR_BGR2HSV);
+			Imgproc.cvtColor(matOriginal, matHSV, Imgproc.COLOR_BGR2HSV);
 			Core.inRange(matHSV, LOWER_BOUNDS, UPPER_BOUNDS, matThresh);
 			Imgproc.findContours(matThresh, contours, matHeirarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
@@ -170,22 +179,50 @@ public class TowerTracker {
 				Point centerw = new Point(rec.br().x,rec.br().y+25);
 				Imgproc.putText(matOriginal, ""+(int)distance+"\"", center, Core.FONT_HERSHEY_PLAIN, 1, RED);
 				Imgproc.putText(matOriginal, ""+(int)azimuth, centerw, Core.FONT_HERSHEY_PLAIN, 1, GREEN);
+				
+//				Build the output string to write to the network tables
+				output += String.format("%d,%d%s", (int)distance, (int)azimuth, ((p==contours.size()-1)?"":"|"));
 			}
 			
 //			Output an image for debugging
-//			Imgcodecs.imwrite("output.png", matOriginal);
+//			Imgcodecs.imwrite("output.png", matHSV);
 			
-
+//			Build the display debugging window
 			frame.getContentPane().removeAll();
-			image = new ImageIcon(createAwtImage(matOriginal));
-			JLabel label1 = new JLabel("", image, JLabel.CENTER);
+			image = new ImageIcon(createAwtImage(matInput));
+			JLabel label1 = new JLabel(image);
+			label1.setAlignmentX(JLabel.LEFT_ALIGNMENT);
+			label1.setAlignmentY(JLabel.TOP_ALIGNMENT);
 			frame.getContentPane().add(label1);
 			
+			image = new ImageIcon(createAwtImage(matHSV));
+			JLabel label2 = new JLabel(image);
+			label2.setAlignmentX(JLabel.RIGHT_ALIGNMENT);
+			label2.setAlignmentY(JLabel.TOP_ALIGNMENT);
+			frame.getContentPane().add(label2);
+			
+			image = new ImageIcon(createAwtImage(matThresh));
+			JLabel label3 = new JLabel(image);
+			label3.setAlignmentX(JLabel.LEFT_ALIGNMENT);
+			label3.setAlignmentY(JLabel.BOTTOM_ALIGNMENT);
+			frame.getContentPane().add(label3);
+			
+			image = new ImageIcon(createAwtImage(matOriginal));
+			JLabel label4 = new JLabel(image);
+			label4.setAlignmentX(JLabel.RIGHT_ALIGNMENT);
+			label4.setAlignmentY(JLabel.BOTTOM_ALIGNMENT);
+			frame.getContentPane().add(label4);
+			
+//			Force the display frame to update
 			SwingUtilities.updateComponentTreeUI(frame);
+			
+//			Write the output sting to the network table
+			table.putString("targets", output);
+//			System.out.println(output);
 		}
 	}
 	/**
-	 * @param angle a nonnormalized angle
+	 * @param angle a non-normalized angle
 	 */
 	public static double normalize360(double angle){
 //		while(angle >= 360.0)
