@@ -24,6 +24,18 @@ import org.opencv.videoio.VideoCapture;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class TowerTracker {
+	
+//	Camera settings:
+//	Color level: 34
+//	Brightness: 41
+//	Sharpness: 12
+//	Contrast: 62
+//	White balance: automatic
+//	Exposure value: 25
+//	Exposure control: hold current
+//	Enable back light compensation: true
+//	Exposure zones: auto
+//	Enable anonymous viewer login (no user name or password required): TRUE
 
 	/**
 	 * static method to load opencv and networkTables
@@ -95,7 +107,8 @@ public class TowerTracker {
 				videoCapture = new VideoCapture();
 				
 				System.out.println("Opening stream...");
-				videoCapture.open("http://10.17.81.11/mjpg/video.mjpg");
+				videoCapture.open("http://10.17.0.90/mjpg/video.mjpg");
+//				videoCapture.open("http://10.17.81.11/mjpg/video.mjpg");
 				
 				System.out.println("Checking connection...");
 //				wait until it is opened
