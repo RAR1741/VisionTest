@@ -53,8 +53,8 @@ public class TowerTracker {
 		BLACK = new Scalar(0,0,0),
 		YELLOW = new Scalar(0, 255, 255),
 //		these are the threshold values in order 
-		LOWER_BOUNDS = new Scalar(58,0,109),
-		UPPER_BOUNDS = new Scalar(93,255,240);
+		LOWER_BOUNDS = new Scalar(67,57,147),
+		UPPER_BOUNDS = new Scalar(106,255,255);
 	
 //		Original color values
 //		LOWER_BOUNDS = new Scalar(58,0,109),
