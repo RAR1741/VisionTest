@@ -55,10 +55,6 @@ public class TowerTracker {
 //		these are the threshold values in order 
 		LOWER_BOUNDS = new Scalar(73,53,220),
 		UPPER_BOUNDS = new Scalar(94,255,255);
-	
-//		Original color values
-//		LOWER_BOUNDS = new Scalar(58,0,109),
-//		UPPER_BOUNDS = new Scalar(93,255,240);
 
 //	the size for resizing the image
 	public static final Size resize = new Size(640,480);
@@ -69,15 +65,13 @@ public class TowerTracker {
 	public static NetworkTable table;
 
 //	Constants for known variables
-//	the height to the top of the target is 97 inches	
 	public static final int TOP_TARGET_HEIGHT = 97;
-//	the physical height of the camera lens
-	public static final int TOP_CAMERA_HEIGHT = 32;
+	public static final int TOP_CAMERA_HEIGHT = 11;
 
 //	camera details, can usually be found on the data sheets of the camera
-	public static final double VERTICAL_FOV  = 55;
-	public static final double HORIZONTAL_FOV  = 55;
-	public static final double CAMERA_ANGLE = 10;
+	public static final double VERTICAL_FOV  = 47;
+	public static final double HORIZONTAL_FOV  = 47;
+	public static final double CAMERA_ANGLE = 30;
 
 	public static boolean shouldRun = true;
 	
@@ -108,7 +102,6 @@ public class TowerTracker {
 				
 				System.out.println("Opening stream...");
 				videoCapture.open("http://10.17.0.90/mjpg/video.mjpg");
-//				videoCapture.open("http://10.17.81.11/mjpg/video.mjpg");
 				
 				System.out.println("Checking connection...");
 //				wait until it is opened
@@ -135,7 +128,7 @@ public class TowerTracker {
 	public static void processImage(){
 		System.out.println("Processing...");
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-		double x,y,targetX,targetY,distance,pan;
+		double x,y,targetX,targetY,distance,pan,tilt;
 		String output = new String();
 //		only run for the specified time
 		while(true){
@@ -147,9 +140,6 @@ public class TowerTracker {
 			videoCapture.read(matOriginal);
 			matInput = matOriginal.clone();
 			
-//			Load image from a static file for testing
-//			matOriginal = Imgcodecs.imread("original.png");
-			
 			Imgproc.cvtColor(matOriginal, matHSV, Imgproc.COLOR_BGR2HSV);
 			Core.inRange(matHSV, LOWER_BOUNDS, UPPER_BOUNDS, matThresh);
 			Imgproc.findContours(matThresh, contours, matHeirarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
@@ -158,7 +148,6 @@ public class TowerTracker {
 			for(MatOfPoint mop : contours){
 				Rect rec = Imgproc.boundingRect(mop);
 				drawContour(matOriginal, rec, RED);
-//				Imgproc.rectangle(matOriginal, rec.br(), rec.tl(), RED);
 			}
 
 //			Make sure the contours that are detected are at least 25x25 pixels and a valid aspect ratio
@@ -188,7 +177,7 @@ public class TowerTracker {
 			for (int p = 0; p < contours.size(); p++) {
 				Rect rec = Imgproc.boundingRect(contours.get(p));
 
-				y = rec.br().y + rec.height / 2;
+				y = rec.br().y + (rec.height / 2);
 				y = -((2 * (y / matOriginal.height())) - 1);
 				distance = (TOP_TARGET_HEIGHT - TOP_CAMERA_HEIGHT) / 
 						Math.tan((y * VERTICAL_FOV / 2.0 + CAMERA_ANGLE) * Math.PI / 180);
@@ -196,7 +185,7 @@ public class TowerTracker {
 //				Angle to target
 				targetX = rec.tl().x + rec.width / 2;
 				targetX = (2 * (targetX / matOriginal.width())) - 1;
-				pan = normalize360(targetX*HORIZONTAL_FOV /2.0 + 0);
+				pan = (targetX*HORIZONTAL_FOV /2.0);
 				
 //				Draw values on target
 				Point center = new Point(rec.br().x,rec.br().y+10);
@@ -207,9 +196,6 @@ public class TowerTracker {
 //				Build the output string to write to the network tables
 				output += String.format("%d,%d%s", (int)distance, (int)pan, ((p==contours.size()-1)?"":"|"));
 			}
-			
-//			Output an image for debugging
-//			Imgcodecs.imwrite("output.png", matHSV);
 			
 //			Build the display debugging window
 			frame.getContentPane().removeAll();
@@ -244,20 +230,6 @@ public class TowerTracker {
 			table.putString("targets", output);
 //			System.out.println(output);
 		}
-	}
-	/**
-	 * @param angle a non-normalized angle
-	 */
-	public static double normalize360(double angle){
-//		while(angle >= 360.0)
-//		{
-//			angle -= 360.0;
-//		}
-//		while(angle < 0.0)
-//		{
-//			angle += 360.0;
-//		}
-		return angle;
 	}
 	
 	public static void drawContour(Mat drawMat, Rect tempRect, Scalar color){
