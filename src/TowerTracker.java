@@ -53,13 +53,14 @@ public class TowerTracker {
 	public static NetworkTable table;
 
 //	Constants for known variables
-	public static final int TOP_TARGET_HEIGHT = 97;
-	public static final int TOP_CAMERA_HEIGHT = 11;
+	public static final int TOP_TARGET_HEIGHT = 99;
+	public static final int TOP_CAMERA_HEIGHT = 10;
 
 //	Camera detail constants
 	public static final double VERTICAL_FOV  = 47;
 	public static final double HORIZONTAL_FOV  = 47;
-	public static final double CAMERA_ANGLE = 30;
+	public static final double VERTICAL_CAMERA_ANGLE = 30;
+	public static final double HORIZONTAL_CAMERA_ANGLE = 0;
 
 //	Main loop variable
 	public static boolean shouldRun = true;
@@ -175,31 +176,42 @@ public class TowerTracker {
 //			Calculate targeting output for each of the remaining contours
 			for (int p = 0; p < contours.size(); p++) {
 				Rect rec = Imgproc.boundingRect(contours.get(p));
+				
+//				Set x to +/- 1 using the position on the screen
+				x = rec.br().x - (rec.width / 2);
+				x = -((2 * (x / matOriginal.height())) - 1);
 
+//				Set y to +/- 1 using the position on the screen
 				y = rec.br().y + (rec.height / 2);
 				y = -((2 * (y / matOriginal.height())) - 1);
 				
-				distance = (TOP_TARGET_HEIGHT - TOP_CAMERA_HEIGHT) / 
-						Math.tan((y * VERTICAL_FOV / 2.0 + CAMERA_ANGLE) * Math.PI / 180);
+//				distance = (TOP_TARGET_HEIGHT - TOP_CAMERA_HEIGHT) / 
+//						Math.tan((y * VERTICAL_FOV / 2.0 + VERTICAL_CAMERA_ANGLE) * Math.PI / 180);
+				
+//				double targetAngle = (y * VERTICAL_FOV / 2) + VERTICAL_CAMERA_ANGLE;
+				distance = (TOP_TARGET_HEIGHT - TOP_CAMERA_HEIGHT)/
+						Math.tan(Math.toRadians((y * VERTICAL_FOV / 2) + VERTICAL_CAMERA_ANGLE));
 				
 //				Horizontal angle to target
 				targetX = rec.tl().x + rec.width / 2;
 				targetX = (2 * (targetX / matOriginal.width())) - 1;
-				pan = -(targetX*HORIZONTAL_FOV /2.0);
+				pan = HORIZONTAL_CAMERA_ANGLE-(targetX*HORIZONTAL_FOV /2.0);
 				
 //				Vertical angle to target
 				targetY = rec.tl().y + rec.height / 2;
 				targetY = (2 * (targetY / matOriginal.height())) - 1;
-				tilt = -(targetY*VERTICAL_FOV /2.0);
+				tilt = VERTICAL_CAMERA_ANGLE-(targetY*VERTICAL_FOV /2.0);
 				
 //				Draw values on target
 				Point center = new Point(rec.br().x,rec.br().y+10);
-				Point centerw = new Point(rec.br().x,rec.br().y+25);
+				Point center1 = new Point(rec.br().x,rec.br().y+25);
+				Point center2 = new Point(rec.br().x,rec.br().y+40);
 				Imgproc.putText(matOriginal, ""+(int)pan, center, Core.FONT_HERSHEY_PLAIN, 1, RED);
-				Imgproc.putText(matOriginal, ""+(int)tilt, centerw, Core.FONT_HERSHEY_PLAIN, 1, GREEN);
+				Imgproc.putText(matOriginal, ""+(int)tilt, center1, Core.FONT_HERSHEY_PLAIN, 1, RED);
+				Imgproc.putText(matOriginal, ""+(int)distance, center2, Core.FONT_HERSHEY_PLAIN, 1, RED);
 				
 //				Build the output string to write to the network tables
-				output += String.format("%d,%d%s", (int)pan, (int)tilt, ((p==contours.size()-1)?"":"|"));
+				output += String.format("%d,%d,%d%s", (int)distance, (int)pan, (int)tilt, ((p==contours.size()-1)?"":"|"));
 			}
 			
 //			Build the display debugging window
@@ -242,7 +254,7 @@ public class TowerTracker {
 		Imgproc.rectangle(drawMat, tempRect.br(), tempRect.tl(), color);
 	}
 	
-//	Takes in a matrix and outputs an image useable by the GUI
+//	Takes in a matrix and outputs an image usable by the GUI
 	public static BufferedImage createAwtImage(Mat mat) {
 	    int type = 0;
 	    if (mat.channels() == 1) {
