@@ -24,18 +24,6 @@ import org.opencv.videoio.VideoCapture;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class TowerTracker {
-	
-//	Camera settings:
-//	Color level: 34
-//	Brightness: 41
-//	Sharpness: 12
-//	Contrast: 62
-//	White balance: automatic
-//	Exposure value: 15
-//	Exposure control: automatic
-//	Enable back light compensation: true
-//	Exposure zones: auto
-//	Enable anonymous viewer login (no user name or password required): TRUE
 
 	/**
 	 * static method to load opencv and networkTables
@@ -45,21 +33,21 @@ public class TowerTracker {
 		NetworkTable.setClientMode();
 		NetworkTable.setIPAddress("roborio-1741-frc.local");
 	}
-//	constants for the color rbg values
+//	Constants for RGB values
 	public static final Scalar 
 		RED = new Scalar(0, 0, 255),
 		BLUE = new Scalar(255, 0, 0),
 		GREEN = new Scalar(0, 255, 0),
 		BLACK = new Scalar(0,0,0),
 		YELLOW = new Scalar(0, 255, 255),
-//		these are the threshold values in order 
+//		Lower and upper bounds of the HSV filtering
 		LOWER_BOUNDS = new Scalar(73,53,220),
 		UPPER_BOUNDS = new Scalar(94,255,255);
 
-//	the size for resizing the image
+//	Main image size
 	public static final Size resize = new Size(640,480);
 
-//	ignore these
+//	Random variables
 	public static VideoCapture videoCapture;
 	public static Mat matInput, matOriginal, matHSV, matThresh, clusters, matHeirarchy;
 	public static NetworkTable table;
@@ -68,11 +56,12 @@ public class TowerTracker {
 	public static final int TOP_TARGET_HEIGHT = 97;
 	public static final int TOP_CAMERA_HEIGHT = 11;
 
-//	camera details, can usually be found on the data sheets of the camera
+//	Camera detail constants
 	public static final double VERTICAL_FOV  = 47;
 	public static final double HORIZONTAL_FOV  = 47;
 	public static final double CAMERA_ANGLE = 30;
 
+//	Main loop variable
 	public static boolean shouldRun = true;
 	
 //	Display variables
@@ -81,22 +70,26 @@ public class TowerTracker {
 	public static ImageIcon image;
 
 	public static void main(String[] args) {
+//		Initialize the matrixes
 		matOriginal = new Mat();
 		matHSV = new Mat();
 		matThresh = new Mat();
 		clusters = new Mat();
 		matHeirarchy = new Mat();
+		
+//		Set the network table to use
 		table = NetworkTable.getTable("Targeting");
 		
+//		Initialize the GUI
 	    frame=new JFrame();
 	    frame.setLayout(new FlowLayout());
 	    frame.setSize(1350, 1000);
 	    frame.setVisible(true);
 		
-//		main loop of the program
+//		Main loop
 		while(shouldRun){
 			try {
-//				opens up the camera stream and tries to load it
+//				Opens up the camera stream and tries to load it
 				System.out.println("Initializing camera...");
 				videoCapture = new VideoCapture();
 				
@@ -104,7 +97,7 @@ public class TowerTracker {
 				videoCapture.open("http://10.17.0.90/mjpg/video.mjpg");
 				
 				System.out.println("Checking connection...");
-//				wait until it is opened
+//				Wait until it is opened
 				while(!videoCapture.isOpened()){}
 				
 				System.out.println("Opened successfully...");
@@ -113,12 +106,13 @@ public class TowerTracker {
 				processImage();
 				System.out.println("Finished processing...");
 			} catch (Exception e) {
+//				Catch any errors and print them to the console
 				System.out.println("Uh oh...");
 				e.printStackTrace();
 				break;
 			}
 		}
-//		make sure the java process quits when the loop finishes
+//		Exit the Java process when the loop finishes
 		System.out.println("Releasing video stream...");
 		videoCapture.release();
 		System.out.println("Exiting application...");
@@ -130,7 +124,7 @@ public class TowerTracker {
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		double x,y,targetX,targetY,distance,pan,tilt;
 		String output = new String();
-//		only run for the specified time
+
 		while(true){
 //			Clear variables from previous loop
 			contours.clear();
@@ -140,17 +134,22 @@ public class TowerTracker {
 			videoCapture.read(matOriginal);
 			matInput = matOriginal.clone();
 			
+//			Convert the image type from BGR to HSV
 			Imgproc.cvtColor(matOriginal, matHSV, Imgproc.COLOR_BGR2HSV);
+			
+//			Filter out any colors not inside the threshold
 			Core.inRange(matHSV, LOWER_BOUNDS, UPPER_BOUNDS, matThresh);
+			
+//			Find the contours
 			Imgproc.findContours(matThresh, contours, matHeirarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 			
-//			Draw the contour rectangles on the material
+//			Draw the initial contour rectangles on the material
 			for(MatOfPoint mop : contours){
 				Rect rec = Imgproc.boundingRect(mop);
 				drawContour(matOriginal, rec, RED);
 			}
 
-//			Make sure the contours that are detected are at least 25x25 pixels and a valid aspect ratio
+//			Make sure the contours that are detected are at least 30x30 pixels and a valid aspect ratio
 			for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
 				MatOfPoint matOfPoint = (MatOfPoint) iterator.next();
 				Rect rec = Imgproc.boundingRect(matOfPoint);
@@ -167,34 +166,40 @@ public class TowerTracker {
 				}
 			}
 			
-//			Draw the contour rectangles on the material
+//			Draw the final contour rectangles on the material
 			for(MatOfPoint mop : contours){
 				Rect rec = Imgproc.boundingRect(mop);
 				drawContour(matOriginal, rec, GREEN);
 			}
 			
-//			Loop over each remaining contour
+//			Calculate targeting output for each of the remaining contours
 			for (int p = 0; p < contours.size(); p++) {
 				Rect rec = Imgproc.boundingRect(contours.get(p));
 
 				y = rec.br().y + (rec.height / 2);
 				y = -((2 * (y / matOriginal.height())) - 1);
+				
 				distance = (TOP_TARGET_HEIGHT - TOP_CAMERA_HEIGHT) / 
 						Math.tan((y * VERTICAL_FOV / 2.0 + CAMERA_ANGLE) * Math.PI / 180);
 				
-//				Angle to target
+//				Horizontal angle to target
 				targetX = rec.tl().x + rec.width / 2;
 				targetX = (2 * (targetX / matOriginal.width())) - 1;
-				pan = (targetX*HORIZONTAL_FOV /2.0);
+				pan = -(targetX*HORIZONTAL_FOV /2.0);
+				
+//				Vertical angle to target
+				targetY = rec.tl().y + rec.height / 2;
+				targetY = (2 * (targetY / matOriginal.height())) - 1;
+				tilt = -(targetY*VERTICAL_FOV /2.0);
 				
 //				Draw values on target
 				Point center = new Point(rec.br().x,rec.br().y+10);
 				Point centerw = new Point(rec.br().x,rec.br().y+25);
-				Imgproc.putText(matOriginal, ""+(int)distance+"\"", center, Core.FONT_HERSHEY_PLAIN, 1, RED);
-				Imgproc.putText(matOriginal, ""+(int)pan, centerw, Core.FONT_HERSHEY_PLAIN, 1, GREEN);
+				Imgproc.putText(matOriginal, ""+(int)pan, center, Core.FONT_HERSHEY_PLAIN, 1, RED);
+				Imgproc.putText(matOriginal, ""+(int)tilt, centerw, Core.FONT_HERSHEY_PLAIN, 1, GREEN);
 				
 //				Build the output string to write to the network tables
-				output += String.format("%d,%d%s", (int)distance, (int)pan, ((p==contours.size()-1)?"":"|"));
+				output += String.format("%d,%d%s", (int)pan, (int)tilt, ((p==contours.size()-1)?"":"|"));
 			}
 			
 //			Build the display debugging window
@@ -232,12 +237,13 @@ public class TowerTracker {
 		}
 	}
 	
+//	Draws the supplied rectangle on the supplied material using the supplied color
 	public static void drawContour(Mat drawMat, Rect tempRect, Scalar color){
 		Imgproc.rectangle(drawMat, tempRect.br(), tempRect.tl(), color);
 	}
 	
+//	Takes in a matrix and outputs an image useable by the GUI
 	public static BufferedImage createAwtImage(Mat mat) {
-
 	    int type = 0;
 	    if (mat.channels() == 1) {
 	        type = BufferedImage.TYPE_BYTE_GRAY;
