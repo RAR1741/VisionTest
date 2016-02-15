@@ -123,7 +123,7 @@ public class TowerTracker {
 	public static void processImage(){
 		System.out.println("Processing...");
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-		double x,y,targetX,targetY,distance,pan,tilt;
+		double x,y,targetX,targetY,targetAngle,distance,pan,tilt;
 		String output = new String();
 
 		while(true){
@@ -177,30 +177,22 @@ public class TowerTracker {
 			for (int p = 0; p < contours.size(); p++) {
 				Rect rec = Imgproc.boundingRect(contours.get(p));
 				
-//				Set x to +/- 1 using the position on the screen
-				x = rec.br().x - (rec.width / 2);
-				x = -((2 * (x / matOriginal.height())) - 1);
-
-//				Set y to +/- 1 using the position on the screen
-				y = rec.br().y + (rec.height / 2);
-				y = -((2 * (y / matOriginal.height())) - 1);
-				
-//				distance = (TOP_TARGET_HEIGHT - TOP_CAMERA_HEIGHT) / 
-//						Math.tan((y * VERTICAL_FOV / 2.0 + VERTICAL_CAMERA_ANGLE) * Math.PI / 180);
-				
-//				double targetAngle = (y * VERTICAL_FOV / 2) + VERTICAL_CAMERA_ANGLE;
-				distance = (TOP_TARGET_HEIGHT - TOP_CAMERA_HEIGHT)/
-						Math.tan(Math.toRadians((y * VERTICAL_FOV / 2) + VERTICAL_CAMERA_ANGLE));
-				
 //				Horizontal angle to target
-				targetX = rec.tl().x + rec.width / 2;
-				targetX = (2 * (targetX / matOriginal.width())) - 1;
-				pan = HORIZONTAL_CAMERA_ANGLE-(targetX*HORIZONTAL_FOV /2.0);
-				
+				x = rec.br().x - (rec.width / 2);
+//				Set x to +/- 1 using the position on the screen
+				x = ((2 * (x / matOriginal.width())) - 1);
+				pan = HORIZONTAL_CAMERA_ANGLE-(x*HORIZONTAL_FOV /2.0);
+
 //				Vertical angle to target
-				targetY = rec.tl().y + rec.height / 2;
-				targetY = (2 * (targetY / matOriginal.height())) - 1;
-				tilt = VERTICAL_CAMERA_ANGLE-(targetY*VERTICAL_FOV /2.0);
+				y = rec.br().y + (rec.height / 2);
+//				Set y to +/- 1 using the position on the screen
+				y = ((2 * (y / matOriginal.height())) - 1);
+				tilt = VERTICAL_CAMERA_ANGLE-(y*VERTICAL_FOV /2.0);
+				
+//				Calculate the horizontal distance to the goal
+				targetAngle = (y * VERTICAL_FOV / 2) + VERTICAL_CAMERA_ANGLE;
+				distance = (TOP_TARGET_HEIGHT - TOP_CAMERA_HEIGHT)/
+						Math.tan(Math.toRadians(targetAngle));
 				
 //				Draw values on target
 				Point center = new Point(rec.br().x,rec.br().y+10);
