@@ -31,8 +31,8 @@ public class TowerTracker {
 //	Sharpness: 12
 //	Contrast: 62
 //	White balance: automatic
-//	Exposure value: 25
-//	Exposure control: hold current
+//	Exposure value: 15
+//	Exposure control: automatic
 //	Enable back light compensation: true
 //	Exposure zones: auto
 //	Enable anonymous viewer login (no user name or password required): TRUE
@@ -43,7 +43,7 @@ public class TowerTracker {
 	static{ 
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		NetworkTable.setClientMode();
-		NetworkTable.setIPAddress("roborio-1781-frc.local");
+		NetworkTable.setIPAddress("roborio-1741-frc.local");
 	}
 //	constants for the color rbg values
 	public static final Scalar 
@@ -53,8 +53,8 @@ public class TowerTracker {
 		BLACK = new Scalar(0,0,0),
 		YELLOW = new Scalar(0, 255, 255),
 //		these are the threshold values in order 
-		LOWER_BOUNDS = new Scalar(67,57,147),
-		UPPER_BOUNDS = new Scalar(106,255,255);
+		LOWER_BOUNDS = new Scalar(73,53,220),
+		UPPER_BOUNDS = new Scalar(94,255,255);
 	
 //		Original color values
 //		LOWER_BOUNDS = new Scalar(58,0,109),
@@ -135,7 +135,7 @@ public class TowerTracker {
 	public static void processImage(){
 		System.out.println("Processing...");
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-		double x,y,targetX,targetY,distance,azimuth;
+		double x,y,targetX,targetY,distance,pan;
 		String output = new String();
 //		only run for the specified time
 		while(true){
@@ -153,48 +153,59 @@ public class TowerTracker {
 			Imgproc.cvtColor(matOriginal, matHSV, Imgproc.COLOR_BGR2HSV);
 			Core.inRange(matHSV, LOWER_BOUNDS, UPPER_BOUNDS, matThresh);
 			Imgproc.findContours(matThresh, contours, matHeirarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+			
+//			Draw the contour rectangles on the material
+			for(MatOfPoint mop : contours){
+				Rect rec = Imgproc.boundingRect(mop);
+				drawContour(matOriginal, rec, RED);
+//				Imgproc.rectangle(matOriginal, rec.br(), rec.tl(), RED);
+			}
 
-//			Make sure the contours that are detected are at least 25x25 pixels and an aspect ratio greater then 1
+//			Make sure the contours that are detected are at least 25x25 pixels and a valid aspect ratio
 			for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
 				MatOfPoint matOfPoint = (MatOfPoint) iterator.next();
 				Rect rec = Imgproc.boundingRect(matOfPoint);
-				if(rec.height < 25 || rec.width < 25){
+				if(rec.height < 30 || rec.width < 30){
 					iterator.remove();
+					drawContour(matOriginal, rec, BLUE);
 					continue;
 				}
+				
 				float aspect = (float)rec.width/(float)rec.height;
-				if(aspect < 1.0)
+				if(aspect > 2.0 || aspect < 1){
+					drawContour(matOriginal, rec, YELLOW);
 					iterator.remove();
+				}
 			}
 			
 //			Draw the contour rectangles on the material
 			for(MatOfPoint mop : contours){
 				Rect rec = Imgproc.boundingRect(mop);
-				Imgproc.rectangle(matOriginal, rec.br(), rec.tl(), RED);
+				drawContour(matOriginal, rec, GREEN);
 			}
 			
-//			Loop over each contour
+//			Loop over each remaining contour
 			for (int p = 0; p < contours.size(); p++) {
 				Rect rec = Imgproc.boundingRect(contours.get(p));
 
 				y = rec.br().y + rec.height / 2;
-				y= -((2 * (y / matOriginal.height())) - 1);
+				y = -((2 * (y / matOriginal.height())) - 1);
 				distance = (TOP_TARGET_HEIGHT - TOP_CAMERA_HEIGHT) / 
 						Math.tan((y * VERTICAL_FOV / 2.0 + CAMERA_ANGLE) * Math.PI / 180);
 				
 //				Angle to target
 				targetX = rec.tl().x + rec.width / 2;
 				targetX = (2 * (targetX / matOriginal.width())) - 1;
-				azimuth = normalize360(targetX*HORIZONTAL_FOV /2.0 + 0);
+				pan = normalize360(targetX*HORIZONTAL_FOV /2.0 + 0);
 				
 //				Draw values on target
 				Point center = new Point(rec.br().x,rec.br().y+10);
 				Point centerw = new Point(rec.br().x,rec.br().y+25);
 				Imgproc.putText(matOriginal, ""+(int)distance+"\"", center, Core.FONT_HERSHEY_PLAIN, 1, RED);
-				Imgproc.putText(matOriginal, ""+(int)azimuth, centerw, Core.FONT_HERSHEY_PLAIN, 1, GREEN);
+				Imgproc.putText(matOriginal, ""+(int)pan, centerw, Core.FONT_HERSHEY_PLAIN, 1, GREEN);
 				
 //				Build the output string to write to the network tables
-				output += String.format("%d,%d%s", (int)distance, (int)azimuth, ((p==contours.size()-1)?"":"|"));
+				output += String.format("%d,%d%s", (int)distance, (int)pan, ((p==contours.size()-1)?"":"|"));
 			}
 			
 //			Output an image for debugging
@@ -247,6 +258,10 @@ public class TowerTracker {
 //			angle += 360.0;
 //		}
 		return angle;
+	}
+	
+	public static void drawContour(Mat drawMat, Rect tempRect, Scalar color){
+		Imgproc.rectangle(drawMat, tempRect.br(), tempRect.tl(), color);
 	}
 	
 	public static BufferedImage createAwtImage(Mat mat) {
