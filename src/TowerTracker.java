@@ -52,15 +52,17 @@ public class TowerTracker {
 	public static Mat matInput, matOriginal, matHSV, matThresh, clusters, matHeirarchy;
 	public static NetworkTable table;
 
+	//////////////////  DO NOT EDIT  //////////////////////
 //	Constants for known variables
 	public static final int TOP_TARGET_HEIGHT = 99;
 	public static final int TOP_CAMERA_HEIGHT = 10;
 
 //	Camera detail constants
-	public static final double VERTICAL_FOV  = 47;
-	public static final double HORIZONTAL_FOV  = 47;
+	public static final double VERTICAL_FOV  = 34;
+	public static final double HORIZONTAL_FOV  = 49;
 	public static final double VERTICAL_CAMERA_ANGLE = 30;
 	public static final double HORIZONTAL_CAMERA_ANGLE = 0;
+	///////////////////////////////////////////////////////
 
 //	Main loop variable
 	public static boolean shouldRun = true;
