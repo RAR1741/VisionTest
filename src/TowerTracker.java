@@ -163,7 +163,7 @@ public class TowerTracker {
 				}
 				
 				float aspect = (float)rec.width/(float)rec.height;
-				if(aspect > 2.0 || aspect < 1){
+				if(aspect > 2.0 || aspect < 0.75){
 					drawContour(matOriginal, rec, YELLOW);
 					iterator.remove();
 				}
@@ -200,12 +200,12 @@ public class TowerTracker {
 				Point center = new Point(rec.br().x,rec.br().y+10);
 				Point center1 = new Point(rec.br().x,rec.br().y+25);
 				Point center2 = new Point(rec.br().x,rec.br().y+40);
-				Imgproc.putText(matOriginal, ""+(int)pan, center, Core.FONT_HERSHEY_PLAIN, 1, RED);
-				Imgproc.putText(matOriginal, ""+(int)tilt, center1, Core.FONT_HERSHEY_PLAIN, 1, RED);
-				Imgproc.putText(matOriginal, ""+(int)distance, center2, Core.FONT_HERSHEY_PLAIN, 1, RED);
+				Imgproc.putText(matOriginal, String.format("%.2f",pan), center, Core.FONT_HERSHEY_PLAIN, 1, RED);
+				Imgproc.putText(matOriginal, String.format("%.2f",tilt), center1, Core.FONT_HERSHEY_PLAIN, 1, RED);
+				Imgproc.putText(matOriginal, String.format("%.2f",distance), center2, Core.FONT_HERSHEY_PLAIN, 1, RED);
 				
 //				Build the output string to write to the network tables
-				output += String.format("%d,%d,%d%s", (int)distance, (int)pan, (int)tilt, ((p==contours.size()-1)?"":"|"));
+				output += String.format("%.2f,%.2f,%.2f%s", distance, pan, tilt, ((p==contours.size()-1)?"":"|"));
 			}
 			
 //			Build the display debugging window
