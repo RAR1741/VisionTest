@@ -44,9 +44,6 @@ public class TowerTracker {
 		LOWER_BOUNDS = new Scalar(73,53,220),
 		UPPER_BOUNDS = new Scalar(94,255,255);
 
-//	Main image size
-	public static final Size resize = new Size(640,480);
-
 //	Random variables
 	public static VideoCapture videoCapture;
 	public static Mat matInput, matOriginal, matHSV, matThresh, clusters, matHeirarchy;
@@ -60,7 +57,7 @@ public class TowerTracker {
 //	Camera detail constants
 	public static final double VERTICAL_FOV  = 34;
 	public static final double HORIZONTAL_FOV  = 49;
-	public static final double VERTICAL_CAMERA_ANGLE = 30;
+	public static final double VERTICAL_CAMERA_ANGLE = 55;
 	public static final double HORIZONTAL_CAMERA_ANGLE = 0;
 	///////////////////////////////////////////////////////
 
@@ -108,6 +105,7 @@ public class TowerTracker {
 //				Actually process the image
 				processImage();
 				System.out.println("Finished processing...");
+				
 			} catch (Exception e) {
 //				Catch any errors and print them to the console
 				System.out.println("Uh oh...");
@@ -125,13 +123,22 @@ public class TowerTracker {
 	public static void processImage(){
 		System.out.println("Processing...");
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-		double x,y,targetX,targetY,targetAngle,distance,pan,tilt;
+		double x,y,targetAngle,distance,pan,tilt;
 		String output = new String();
+	    
+	    long lastTime = 0;
+	    long temp = 0;
+	    double fps = 0;
 
 		while(true){
 //			Clear variables from previous loop
 			contours.clear();
 			output = "";
+			
+//			Calculate the fps
+			temp = lastTime;
+			fps = 1000/((lastTime = System.currentTimeMillis()) - temp); //This way, lastTime is assigned and used at the same time.
+			System.out.println(fps);
 			
 //			Capture image from the axis camera
 			videoCapture.read(matOriginal);
@@ -145,12 +152,6 @@ public class TowerTracker {
 			
 //			Find the contours
 			Imgproc.findContours(matThresh, contours, matHeirarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-			
-//			Draw the initial contour rectangles on the material
-			for(MatOfPoint mop : contours){
-				Rect rec = Imgproc.boundingRect(mop);
-				drawContour(matOriginal, rec, RED);
-			}
 
 //			Make sure the contours that are detected are at least 30x30 pixels and a valid aspect ratio
 			for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
