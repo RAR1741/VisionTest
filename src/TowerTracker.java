@@ -18,8 +18,9 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
+import org.opencv.highgui.VideoCapture;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.videoio.VideoCapture;
+//import org.opencv.videoio.VideoCapture;
 
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
@@ -201,9 +202,9 @@ public class TowerTracker {
 				Point center = new Point(rec.br().x,rec.br().y+10);
 				Point center1 = new Point(rec.br().x,rec.br().y+25);
 				Point center2 = new Point(rec.br().x,rec.br().y+40);
-				Imgproc.putText(matOriginal, String.format("%.2f",pan), center, Core.FONT_HERSHEY_PLAIN, 1, RED);
-				Imgproc.putText(matOriginal, String.format("%.2f",tilt), center1, Core.FONT_HERSHEY_PLAIN, 1, RED);
-				Imgproc.putText(matOriginal, String.format("%.2f",distance), center2, Core.FONT_HERSHEY_PLAIN, 1, RED);
+//				Imgproc.putText(matOriginal, String.format("%.2f",pan), center, Core.FONT_HERSHEY_PLAIN, 1, RED);
+//				Imgproc.putText(matOriginal, String.format("%.2f",tilt), center1, Core.FONT_HERSHEY_PLAIN, 1, RED);
+//				Imgproc.putText(matOriginal, String.format("%.2f",distance), center2, Core.FONT_HERSHEY_PLAIN, 1, RED);
 				
 //				Build the output string to write to the network tables
 				output += String.format("%.2f,%.2f,%.2f%s", distance, pan, tilt, ((p==contours.size()-1)?"":"|"));
@@ -246,7 +247,7 @@ public class TowerTracker {
 	
 //	Draws the supplied rectangle on the supplied material using the supplied color
 	public static void drawContour(Mat drawMat, Rect tempRect, Scalar color){
-		Imgproc.rectangle(drawMat, tempRect.br(), tempRect.tl(), color);
+		//Imgproc.rectangle(drawMat, tempRect.br(), tempRect.tl(), color);
 	}
 	
 //	Takes in a matrix and outputs an image usable by the GUI
