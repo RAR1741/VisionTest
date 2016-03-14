@@ -85,6 +85,7 @@ public class TowerTracker {
 	    frame=new JFrame();
 	    frame.setLayout(new FlowLayout());
 	    frame.setSize(1350, 1000);
+	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setVisible(true);
 		
 //		Main loop
