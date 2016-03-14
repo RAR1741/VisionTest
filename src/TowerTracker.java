@@ -66,7 +66,7 @@ public class TowerTracker {
 	public static boolean shouldRun = true;
 	
 //	Display variables
-	public static JFrame frame;
+//	public static JFrame frame;
 	public static JLabel lbl;
 	public static ImageIcon image;
 
@@ -82,11 +82,11 @@ public class TowerTracker {
 		table = NetworkTable.getTable("Targeting");
 		
 //		Initialize the GUI
-	    frame=new JFrame();
-	    frame.setLayout(new FlowLayout());
-	    frame.setSize(1350, 1000);
-	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    frame.setVisible(true);
+//	    frame=new JFrame();
+//	    frame.setLayout(new FlowLayout());
+//	    frame.setSize(1350, 1000);
+//	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//	    frame.setVisible(true);
 		
 //		Main loop
 		while(shouldRun){
@@ -212,37 +212,37 @@ public class TowerTracker {
 			}
 			
 //			Build the display debugging window
-			frame.getContentPane().removeAll();
-			image = new ImageIcon(createAwtImage(matInput));
-			JLabel label1 = new JLabel(image);
-			label1.setAlignmentX(JLabel.LEFT_ALIGNMENT);
-			label1.setAlignmentY(JLabel.TOP_ALIGNMENT);
-			frame.getContentPane().add(label1);
-			
-			image = new ImageIcon(createAwtImage(matHSV));
-			JLabel label2 = new JLabel(image);
-			label2.setAlignmentX(JLabel.RIGHT_ALIGNMENT);
-			label2.setAlignmentY(JLabel.TOP_ALIGNMENT);
-			frame.getContentPane().add(label2);
-			
-			image = new ImageIcon(createAwtImage(matThresh));
-			JLabel label3 = new JLabel(image);
-			label3.setAlignmentX(JLabel.LEFT_ALIGNMENT);
-			label3.setAlignmentY(JLabel.BOTTOM_ALIGNMENT);
-			frame.getContentPane().add(label3);
-			
-			image = new ImageIcon(createAwtImage(matOriginal));
-			JLabel label4 = new JLabel(image);
-			label4.setAlignmentX(JLabel.RIGHT_ALIGNMENT);
-			label4.setAlignmentY(JLabel.BOTTOM_ALIGNMENT);
-			frame.getContentPane().add(label4);
-			
-//			Force the display frame to update
-			SwingUtilities.updateComponentTreeUI(frame);
-			
-//			Write the output sting to the network table
-			table.putString("targets", output);
-//			System.out.println(output);
+//			frame.getContentPane().removeAll();
+//			image = new ImageIcon(createAwtImage(matInput));
+//			JLabel label1 = new JLabel(image);
+//			label1.setAlignmentX(JLabel.LEFT_ALIGNMENT);
+//			label1.setAlignmentY(JLabel.TOP_ALIGNMENT);
+//			frame.getContentPane().add(label1);
+//			
+//			image = new ImageIcon(createAwtImage(matHSV));
+//			JLabel label2 = new JLabel(image);
+//			label2.setAlignmentX(JLabel.RIGHT_ALIGNMENT);
+//			label2.setAlignmentY(JLabel.TOP_ALIGNMENT);
+//			frame.getContentPane().add(label2);
+//			
+//			image = new ImageIcon(createAwtImage(matThresh));
+//			JLabel label3 = new JLabel(image);
+//			label3.setAlignmentX(JLabel.LEFT_ALIGNMENT);
+//			label3.setAlignmentY(JLabel.BOTTOM_ALIGNMENT);
+//			frame.getContentPane().add(label3);
+//			
+//			image = new ImageIcon(createAwtImage(matOriginal));
+//			JLabel label4 = new JLabel(image);
+//			label4.setAlignmentX(JLabel.RIGHT_ALIGNMENT);
+//			label4.setAlignmentY(JLabel.BOTTOM_ALIGNMENT);
+//			frame.getContentPane().add(label4);
+//			
+////			Force the display frame to update
+//			SwingUtilities.updateComponentTreeUI(frame);
+//			
+////			Write the output sting to the network table
+//			table.putString("targets", output);
+////			System.out.println(output);
 		}
 	}
 	
