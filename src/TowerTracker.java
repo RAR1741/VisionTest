@@ -28,10 +28,14 @@ public class TowerTracker {
 	/**
 	 * static method to load opencv and networkTables
 	 */
+	///////////////////////////////////////////////////////////////////
+	//*****************************************************************
+	//THIS IS IMPORTANT INFORMATION
+	//CAMERA SETTINGS: Contrast:31,Brightness:40,WhiteBalance: Fixed Fluorescent 1
 	static{ 
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		NetworkTable.setClientMode();
-		NetworkTable.setIPAddress("roborio-1741-frc.local");
+		NetworkTable.setIPAddress("roborio-1751-frc.local");
 	}
 //	Constants for RGB values
 	public static final Scalar 
@@ -41,8 +45,8 @@ public class TowerTracker {
 		BLACK = new Scalar(0,0,0),
 		YELLOW = new Scalar(0, 255, 255),
 //		Lower and upper bounds of the HSV filtering
-		LOWER_BOUNDS = new Scalar(73,53,220),
-		UPPER_BOUNDS = new Scalar(94,255,255);
+		LOWER_BOUNDS = new Scalar(71,36,100),
+		UPPER_BOUNDS = new Scalar(94,255,255);//lower:(73,53,220) Upper:(94,255,255)
 
 //	Random variables
 	public static VideoCapture videoCapture;
@@ -95,7 +99,7 @@ public class TowerTracker {
 				videoCapture = new VideoCapture();
 				
 				System.out.println("Opening stream...");
-				videoCapture.open("http://10.17.0.90/mjpg/video.mjpg");
+				videoCapture.open("http://axis-1741.local/mjpg/video.mjpg");
 				
 				System.out.println("Checking connection...");
 //				Wait until it is opened
@@ -138,7 +142,10 @@ public class TowerTracker {
 			
 //			Calculate the fps
 			temp = lastTime;
-			fps = 1000/((lastTime = System.currentTimeMillis()) - temp); //This way, lastTime is assigned and used at the same time.
+			if(((lastTime = System.currentTimeMillis()) - temp) != 0)
+			{
+				fps = 1000/((lastTime = System.currentTimeMillis()) - temp); //This way, lastTime is assigned and used at the same time.
+			}
 			System.out.println(fps);
 			
 //			Capture image from the axis camera
