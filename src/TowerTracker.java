@@ -46,7 +46,7 @@ public class TowerTracker {
 		YELLOW = new Scalar(0, 255, 255),
 //		Lower and upper bounds of the HSV filtering
 		LOWER_BOUNDS = new Scalar(71,36,100),
-		UPPER_BOUNDS = new Scalar(94,255,255);//lower:(73,53,220) Upper:(94,255,255)
+		UPPER_BOUNDS = new Scalar(154,255,255);//lower:(73,53,220) Upper:(94,255,255)
 
 //	Random variables
 	public static VideoCapture videoCapture;
@@ -128,7 +128,8 @@ public class TowerTracker {
 	public static void processImage(){
 		System.out.println("Processing...");
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-		double x,y,targetAngle,distance,pan,tilt;
+		double x,y,targetAngle,distance,width,pan,tilt;
+		Rect bestRec = new Rect(0,0,0,0);
 		String output = new String();
 	    
 	    long lastTime = 0;
@@ -184,18 +185,26 @@ public class TowerTracker {
 				drawContour(matOriginal, rec, GREEN);
 			}
 			
+			bestRec = new Rect(0,0,0,0);
 //			Calculate targeting output for each of the remaining contours
 			for (int p = 0; p < contours.size(); p++) {
 				Rect rec = Imgproc.boundingRect(contours.get(p));
 				
+				if(rec.width > bestRec.width){
+					bestRec = rec;
+				}
+			}
+
+//			If there was actually a target
+			if(bestRec.width != 0){
 //				Horizontal angle to target
-				x = rec.br().x - (rec.width / 2);
+				x = bestRec.br().x - (bestRec.width / 2);
 //				Set x to +/- 1 using the position on the screen
 				x = ((2 * (x / matOriginal.width())) - 1);
 				pan = HORIZONTAL_CAMERA_ANGLE-(x*HORIZONTAL_FOV /2.0);
 
 //				Vertical angle to target
-				y = rec.br().y + (rec.height / 2);
+				y = bestRec.br().y + (bestRec.height / 2);
 //				Set y to +/- 1 using the position on the screen
 				y = ((2 * (y / matOriginal.height())) - 1);
 				tilt = VERTICAL_CAMERA_ANGLE-(y*VERTICAL_FOV /2.0);
@@ -204,17 +213,18 @@ public class TowerTracker {
 				targetAngle = (y * VERTICAL_FOV / 2) + VERTICAL_CAMERA_ANGLE;
 				distance = (TOP_TARGET_HEIGHT - TOP_CAMERA_HEIGHT)/
 						Math.tan(Math.toRadians(targetAngle));
+				width = bestRec.width;
 				
 //				Draw values on target
-				Point center = new Point(rec.br().x,rec.br().y+10);
-				Point center1 = new Point(rec.br().x,rec.br().y+25);
-				Point center2 = new Point(rec.br().x,rec.br().y+40);
+				Point center = new Point(bestRec.br().x,bestRec.br().y+10);
+				Point center1 = new Point(bestRec.br().x,bestRec.br().y+25);
+				Point center2 = new Point(bestRec.br().x,bestRec.br().y+40);
 				Imgproc.putText(matOriginal, String.format("%.2f",pan), center, Core.FONT_HERSHEY_PLAIN, 1, RED);
 				Imgproc.putText(matOriginal, String.format("%.2f",tilt), center1, Core.FONT_HERSHEY_PLAIN, 1, RED);
-				Imgproc.putText(matOriginal, String.format("%.2f",distance), center2, Core.FONT_HERSHEY_PLAIN, 1, RED);
-				
-//				Build the output string to write to the network tables
-				output += String.format("%.2f,%.2f,%.2f%s", distance, pan, tilt, ((p==contours.size()-1)?"":"|"));
+				Imgproc.putText(matOriginal, String.format("%.2f",width), center2, Core.FONT_HERSHEY_PLAIN, 1, RED);
+
+				output = String.format("%.2f,%.2f,%.2f", width, pan, tilt);
+//				System.out.println(output);
 			}
 			
 //			Build the display debugging window
