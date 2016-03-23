@@ -98,8 +98,10 @@ public class TowerTracker {
 //		Initialize the GUI
 	    frame=new JFrame();
 	    frame.setLayout(new FlowLayout());
-	    frame.setSize(1350, 1000);
+	    frame.setSize(250, 250);
+	    frame.setLocation(1000, 0);
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    frame.setTitle("Vision Tracking");
 	    frame.setVisible(true);
 		
 //		Main loop
@@ -240,23 +242,6 @@ public class TowerTracker {
 			
 //			Build the display debugging window
 			frame.getContentPane().removeAll();
-			image = new ImageIcon(createAwtImage(matInput));
-			JLabel label1 = new JLabel(image);
-			label1.setAlignmentX(JLabel.LEFT_ALIGNMENT);
-			label1.setAlignmentY(JLabel.TOP_ALIGNMENT);
-			frame.getContentPane().add(label1);
-			
-			image = new ImageIcon(createAwtImage(matHSV));
-			JLabel label2 = new JLabel(image);
-			label2.setAlignmentX(JLabel.RIGHT_ALIGNMENT);
-			label2.setAlignmentY(JLabel.TOP_ALIGNMENT);
-			frame.getContentPane().add(label2);
-			
-			image = new ImageIcon(createAwtImage(matThresh));
-			JLabel label3 = new JLabel(image);
-			label3.setAlignmentX(JLabel.LEFT_ALIGNMENT);
-			label3.setAlignmentY(JLabel.BOTTOM_ALIGNMENT);
-			frame.getContentPane().add(label3);
 			
 			image = new ImageIcon(createAwtImage(matOriginal));
 			JLabel label4 = new JLabel(image);
@@ -269,6 +254,7 @@ public class TowerTracker {
 			
 //			Write the output sting to the network table
 			table.putString("targets", output);
+			frame.pack();
 //			System.out.println(output);
 		}
 	}
