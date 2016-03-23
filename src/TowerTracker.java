@@ -55,6 +55,7 @@ public class TowerTracker {
 		GREEN = new Scalar(0, 255, 0),
 		BLACK = new Scalar(0,0,0),
 		YELLOW = new Scalar(0, 255, 255),
+		CYAN =  new Scalar(255, 255, 0),
 //		Lower and upper bounds of the HSV filtering
 		LOWER_BOUNDS = new Scalar(71,36,100),
 		UPPER_BOUNDS = new Scalar(154,255,255);//lower:(73,53,220) Upper:(94,255,255)
@@ -210,6 +211,7 @@ public class TowerTracker {
 
 //			If there was actually a target
 			if(bestRec.width != 0){
+				drawContour(matOriginal, bestRec, CYAN);
 //				Horizontal angle to target
 				x = bestRec.br().x - (bestRec.width / 2);
 //				Set x to +/- 1 using the position on the screen
