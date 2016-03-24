@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
@@ -7,9 +8,11 @@ import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.opencv.core.Core;
@@ -85,6 +88,9 @@ public class TowerTracker {
 	public static JFrame frame;
 	public static JLabel lbl;
 	public static ImageIcon image;
+	public static JLabel reloadLabel;
+	public static JLabel reload;
+	public static JPanel reloadinfo;
 
 	public static void main(String[] args) {
 //		Initialize the matrixes
@@ -99,7 +105,7 @@ public class TowerTracker {
 		
 //		Initialize the GUI
 	    frame=new JFrame();
-	    frame.setLayout(new FlowLayout());
+	    frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 	    frame.setSize(250, 250);
 	    frame.setLocation(1000, 0);
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -107,9 +113,22 @@ public class TowerTracker {
 	    frame.setVisible(true);
 
 	    lbl = new JLabel();
-		lbl.setAlignmentX(JLabel.RIGHT_ALIGNMENT);
-		lbl.setAlignmentY(JLabel.BOTTOM_ALIGNMENT);
-		
+	    lbl.setAlignmentX(JLabel.LEFT_ALIGNMENT);
+		lbl.setAlignmentY(JLabel.TOP_ALIGNMENT);
+		frame.add(lbl);
+
+	    reloadinfo = new JPanel();
+	    reloadinfo.setLayout(new BoxLayout(reloadinfo, BoxLayout.Y_AXIS));
+	    reloadinfo.setAlignmentY(JPanel.TOP_ALIGNMENT);
+	    reloadinfo.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+	    reloadLabel = new JLabel("Reload:");
+	    reloadinfo.add(reloadLabel);
+	    reload = new JLabel("text");
+	    reload.setForeground(Color.red);
+	    reload.setBackground(Color.red);
+	    reloadinfo.add(reload);
+	    frame.add(reloadinfo);
+
 //		Main loop
 		while(shouldRun){
 			try {
@@ -166,7 +185,7 @@ public class TowerTracker {
 			{
 				fps = 1000/((lastTime = System.currentTimeMillis()) - temp); //This way, lastTime is assigned and used at the same time.
 			}
-			System.out.println(fps);
+			//System.out.println(fps);
 			
 //			Capture image from the axis camera
 			videoCapture.read(matOriginal);
@@ -248,12 +267,11 @@ public class TowerTracker {
 			}
 			
 //			Build the display debugging window
-			frame.getContentPane().removeAll();
+			//frame.getContentPane().removeAll();
 			
 			image = new ImageIcon(createAwtImage(matOriginal));
 			image.getImage().flush();
 			lbl.setIcon(image);
-			frame.add(lbl);
 			//lbl.setIcon(image);
 			//JLabel label4 = new JLabel(image);
 			//lbl = new JLabel(image);
