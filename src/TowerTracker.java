@@ -124,10 +124,10 @@ public class TowerTracker {
 		frame.add(lbl);
 
 	    reloadinfo = new JPanel();
-	    reloadinfo.setLayout(new BoxLayout(reloadinfo, BoxLayout.Y_AXIS));
+	    reloadinfo.setLayout(new BoxLayout(reloadinfo, BoxLayout.X_AXIS));
 	    reloadinfo.setAlignmentY(JPanel.TOP_ALIGNMENT);
 	    reloadinfo.setAlignmentX(JPanel.LEFT_ALIGNMENT);
-	    reloadLabel = new JLabel("Reload:");
+	    reloadLabel = new JLabel("Reload: ");
 	    reloadinfo.add(reloadLabel);
 	    reload = new JLabel("Connecting");
 	    reload.setForeground(Color.blue);
