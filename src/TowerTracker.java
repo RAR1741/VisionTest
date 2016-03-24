@@ -1,4 +1,5 @@
 import java.awt.FlowLayout;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
@@ -104,6 +105,10 @@ public class TowerTracker {
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setTitle("Vision Tracking");
 	    frame.setVisible(true);
+
+	    lbl = new JLabel();
+		lbl.setAlignmentX(JLabel.RIGHT_ALIGNMENT);
+		lbl.setAlignmentY(JLabel.BOTTOM_ALIGNMENT);
 		
 //		Main loop
 		while(shouldRun){
@@ -113,7 +118,7 @@ public class TowerTracker {
 				videoCapture = new VideoCapture();
 				
 				System.out.println("Opening stream...");
-				videoCapture.open("http://axis-1741.local/mjpg/video.mjpg");
+				videoCapture.open("http://axis1741.local/mjpg/video.mjpg");
 				
 				System.out.println("Checking connection...");
 //				Wait until it is opened
@@ -246,10 +251,13 @@ public class TowerTracker {
 			frame.getContentPane().removeAll();
 			
 			image = new ImageIcon(createAwtImage(matOriginal));
-			JLabel label4 = new JLabel(image);
-			label4.setAlignmentX(JLabel.RIGHT_ALIGNMENT);
-			label4.setAlignmentY(JLabel.BOTTOM_ALIGNMENT);
-			frame.getContentPane().add(label4);
+			image.getImage().flush();
+			lbl.setIcon(image);
+			frame.add(lbl);
+			//lbl.setIcon(image);
+			//JLabel label4 = new JLabel(image);
+			//lbl = new JLabel(image);
+
 			
 //			Force the display frame to update
 			SwingUtilities.updateComponentTreeUI(frame);
@@ -257,6 +265,7 @@ public class TowerTracker {
 //			Write the output sting to the network table
 			table.putString("targets", output);
 			frame.pack();
+			frame.setLocation((int) Toolkit.getDefaultToolkit().getScreenSize().getWidth() - frame.getWidth(), 0);
 //			System.out.println(output);
 		}
 	}
