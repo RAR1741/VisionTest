@@ -31,7 +31,18 @@ public class TowerTracker {
 	///////////////////////////////////////////////////////////////////
 	//*****************************************************************
 	//THIS IS IMPORTANT INFORMATION
-	//CAMERA SETTINGS: Contrast:31,Brightness:40,WhiteBalance: Fixed Fluorescent 1
+	//CAMERA SETTINGS:
+	//	Color level: 100
+	//	Brightness:40
+	//	Sharpness: 50
+	//	Contrast:31
+	//	WhiteBalance: Fixed Fluorescent 1
+	//	Exposure value: 50
+	//	Exposure control: automatic
+	//	Back light compensation: checked
+	//	Exposure zones: auto
+	//	Exposure priority: default
+	//
 	static{ 
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		NetworkTable.setClientMode();
@@ -56,7 +67,7 @@ public class TowerTracker {
 	//////////////////  DO NOT EDIT  //////////////////////
 //	Constants for known variables
 	public static final int TOP_TARGET_HEIGHT = 99;
-	public static final int TOP_CAMERA_HEIGHT = 10;
+	public static final int TOP_CAMERA_HEIGHT = 12;
 
 //	Camera detail constants
 	public static final double VERTICAL_FOV  = 34;
