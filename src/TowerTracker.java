@@ -1,13 +1,16 @@
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
-
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -111,6 +114,11 @@ public class TowerTracker {
 	    frame.setLocation(1000, 0);
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setTitle("Vision Tracking");
+	    try {
+			frame.setIconImage(ImageIO.read(new File("src/target.png")));
+		} catch (IOException e1) {
+			System.out.println("no icon");
+		}
 	    frame.setVisible(true);
 
 	    lbl = new JLabel();
