@@ -49,7 +49,7 @@ public class TowerTracker {
 	static{ 
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		NetworkTable.setClientMode();
-		NetworkTable.setIPAddress("roborio-1751-frc.local");
+		NetworkTable.setIPAddress("roborio-1741-frc.local");
 	}
 //	Constants for RGB values
 	public static final Scalar 
@@ -143,7 +143,7 @@ public class TowerTracker {
 				videoCapture = new VideoCapture();
 				
 				System.out.println("Opening stream...");
-				videoCapture.open("http://axis-1741.local/mjpg/video.mjpg");
+				videoCapture.open("http://axis1741.local/mjpg/video.mjpg");
 				
 				System.out.println("Checking connection...");
 //				Wait until it is opened
