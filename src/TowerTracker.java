@@ -114,10 +114,11 @@ public class TowerTracker {
 	    frame.setLocation(1000, 0);
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setTitle("Vision Tracking");
-	    try {
-			frame.setIconImage(ImageIO.read(new File("src/target.png")));
+	    TowerTracker.class.getResource("images/target.png");
+		try {
+			frame.setIconImage(ImageIO.read(TowerTracker.class.getResource("images/target.png")));
 		} catch (IOException e1) {
-			System.out.println("no icon");
+			System.out.println("oh no");
 		}
 	    frame.setVisible(true);
 
