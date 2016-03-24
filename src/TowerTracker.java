@@ -143,7 +143,7 @@ public class TowerTracker {
 				videoCapture = new VideoCapture();
 				
 				System.out.println("Opening stream...");
-				videoCapture.open("http://axis1741.local/mjpg/video.mjpg");
+				videoCapture.open("http://axis-1741.local/mjpg/video.mjpg");
 				
 				System.out.println("Checking connection...");
 //				Wait until it is opened
