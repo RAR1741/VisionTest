@@ -67,7 +67,7 @@ public class TowerTracker {
 //	Random variables
 	public static VideoCapture videoCapture;
 	public static Mat matInput, matOriginal, matHSV, matThresh, clusters, matHeirarchy;
-	public static NetworkTable table;
+	public static NetworkTable table, station;
 
 	//////////////////  DO NOT EDIT  //////////////////////
 //	Constants for known variables
@@ -102,6 +102,7 @@ public class TowerTracker {
 		
 //		Set the network table to use
 		table = NetworkTable.getTable("Targeting");
+		station = NetworkTable.getTable("Station");
 		
 //		Initialize the GUI
 	    frame=new JFrame();
@@ -123,9 +124,9 @@ public class TowerTracker {
 	    reloadinfo.setAlignmentX(JPanel.LEFT_ALIGNMENT);
 	    reloadLabel = new JLabel("Reload:");
 	    reloadinfo.add(reloadLabel);
-	    reload = new JLabel("text");
-	    reload.setForeground(Color.red);
-	    reload.setBackground(Color.red);
+	    reload = new JLabel("Connecting");
+	    reload.setForeground(Color.blue);
+	    reload.setBackground(Color.blue);
 	    reloadinfo.add(reload);
 	    frame.add(reloadinfo);
 
@@ -137,7 +138,7 @@ public class TowerTracker {
 				videoCapture = new VideoCapture();
 				
 				System.out.println("Opening stream...");
-				videoCapture.open("http://axis1741.local/mjpg/video.mjpg");
+				videoCapture.open("http://axis-1741.local/mjpg/video.mjpg");
 				
 				System.out.println("Checking connection...");
 //				Wait until it is opened
@@ -275,7 +276,16 @@ public class TowerTracker {
 			//lbl.setIcon(image);
 			//JLabel label4 = new JLabel(image);
 			//lbl = new JLabel(image);
-
+			if(station.getBoolean("S_reload", true))
+			{
+				reload.setText("Reload");
+				reload.setForeground(Color.red);
+			}
+			else
+			{
+				reload.setText("Ready");
+				reload.setForeground(Color.green);
+			}
 			
 //			Force the display frame to update
 			SwingUtilities.updateComponentTreeUI(frame);
