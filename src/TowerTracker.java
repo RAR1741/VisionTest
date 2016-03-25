@@ -33,11 +33,11 @@ public class TowerTracker {
 	//THIS IS IMPORTANT INFORMATION
 	//CAMERA SETTINGS:
 	//	Color level: 100
-	//	Brightness:40
+	//	Brightness:27
 	//	Sharpness: 50
-	//	Contrast:31
+	//	Contrast:72
 	//	WhiteBalance: Fixed Fluorescent 1
-	//	Exposure value: 50
+	//	Exposure value: 27
 	//	Exposure control: automatic
 	//	Back light compensation: checked
 	//	Exposure zones: auto
@@ -46,7 +46,7 @@ public class TowerTracker {
 	static{ 
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		NetworkTable.setClientMode();
-		NetworkTable.setIPAddress("roborio-1751-frc.local");
+		NetworkTable.setIPAddress("roborio-1741-frc.local");
 	}
 //	Constants for RGB values
 	public static final Scalar 
@@ -184,7 +184,7 @@ public class TowerTracker {
 				}
 				
 				float aspect = (float)rec.width/(float)rec.height;
-				if(aspect > 2.0 || aspect < 0.75){
+				if(aspect > 2.5 || aspect < 0.75){
 					drawContour(matOriginal, rec, YELLOW);
 					iterator.remove();
 				}
