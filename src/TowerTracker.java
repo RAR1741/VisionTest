@@ -126,7 +126,7 @@ public class TowerTracker {
 //				Catch any errors and print them to the console
 				System.out.println("Uh oh...");
 				e.printStackTrace();
-				break;
+				//break;
 			}
 		}
 //		Exit the Java process when the loop finishes
