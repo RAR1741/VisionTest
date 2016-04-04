@@ -195,7 +195,7 @@ public class TowerTracker {
 			{
 				fps = 1000/((lastTime = System.currentTimeMillis()) - temp); //This way, lastTime is assigned and used at the same time.
 			}
-			fpsLabel.setText(Double.toString(fps));
+			fpsLabel.setText("FPS: " + Double.toString(fps));
 			//System.out.println(fps);
 			
 //			Capture image from the axis camera
