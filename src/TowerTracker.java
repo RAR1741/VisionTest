@@ -90,6 +90,7 @@ public class TowerTracker {
 	public static JLabel reloadLabel;
 	public static JLabel reload;
 	public static JPanel reloadinfo;
+	public static JLabel fpsLabel;
 
 	public static void main(String[] args) {
 //		Initialize the matrixes
@@ -117,6 +118,9 @@ public class TowerTracker {
 			System.out.println("oh no");
 		}
 	    frame.setVisible(true);
+
+	    fpsLabel = new JLabel("Connecting...");
+	    frame.add(fpsLabel);
 
 	    lbl = new JLabel();
 	    lbl.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -191,6 +195,7 @@ public class TowerTracker {
 			{
 				fps = 1000/((lastTime = System.currentTimeMillis()) - temp); //This way, lastTime is assigned and used at the same time.
 			}
+			fpsLabel.setText(Double.toString(fps));
 			//System.out.println(fps);
 			
 //			Capture image from the axis camera
