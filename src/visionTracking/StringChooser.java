@@ -41,6 +41,7 @@ public class StringChooser extends JPanel implements ActionListener
 		chooser = new JComboBox<String>(c);
 		chooser.setSize(new Dimension(100,20));
 		chooser.setSelectedIndex(0);
+		chooser.setMaximumSize(new Dimension(70, 50));
 		this.add(chooser);
 		chooser.addActionListener(this);
 		t.putString(n, (String)chooser.getSelectedItem());
