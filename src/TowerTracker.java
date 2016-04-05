@@ -91,6 +91,7 @@ public class TowerTracker {
 	public static JLabel reload;
 	public static JPanel reloadinfo;
 	public static JLabel fpsLabel;
+	public static BoolIndicator reloadIndicator;
 
 	public static void main(String[] args) {
 //		Initialize the matrixes
@@ -127,17 +128,20 @@ public class TowerTracker {
 		lbl.setAlignmentY(JLabel.TOP_ALIGNMENT);
 		frame.add(lbl);
 
-	    reloadinfo = new JPanel();
-	    reloadinfo.setLayout(new BoxLayout(reloadinfo, BoxLayout.X_AXIS));
-	    reloadinfo.setAlignmentY(JPanel.TOP_ALIGNMENT);
-	    reloadinfo.setAlignmentX(JPanel.LEFT_ALIGNMENT);
-	    reloadLabel = new JLabel("Reload: ");
-	    reloadinfo.add(reloadLabel);
-	    reload = new JLabel("Connecting");
-	    reload.setForeground(Color.blue);
-	    reload.setBackground(Color.blue);
-	    reloadinfo.add(reload);
-	    frame.add(reloadinfo);
+		reloadIndicator = new BoolIndicator("Reload", "Ready", "Reload");
+		reloadIndicator.UseNetworkTable(station);
+		frame.add(reloadIndicator);
+//	    reloadinfo = new JPanel();
+//	    reloadinfo.setLayout(new BoxLayout(reloadinfo, BoxLayout.X_AXIS));
+//	    reloadinfo.setAlignmentY(JPanel.TOP_ALIGNMENT);
+//	    reloadinfo.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+//	    reloadLabel = new JLabel("Reload: ");
+//	    reloadinfo.add(reloadLabel);
+//	    reload = new JLabel("Connecting");
+//	    reload.setForeground(Color.blue);
+//	    reload.setBackground(Color.blue);
+//	    reloadinfo.add(reload);
+//	    frame.add(reloadinfo);
 
 //		Main loop
 		while(shouldRun){
@@ -286,16 +290,17 @@ public class TowerTracker {
 			//lbl.setIcon(image);
 			//JLabel label4 = new JLabel(image);
 			//lbl = new JLabel(image);
-			if(station.getBoolean("S_reload", true))
-			{
-				reload.setText("Reload");
-				reload.setForeground(Color.red);
-			}
-			else
-			{
-				reload.setText("Ready");
-				reload.setForeground(Color.green);
-			}
+//			if(station.getBoolean("S_reload", true))
+//			{
+//				reload.setText("Reload");
+//				reload.setForeground(Color.red);
+//			}
+//			else
+//			{
+//				reload.setText("Ready");
+//				reload.setForeground(Color.green);
+//			}
+			reloadIndicator.Update();
 			
 //			Force the display frame to update
 			SwingUtilities.updateComponentTreeUI(frame);

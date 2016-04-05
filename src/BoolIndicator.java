@@ -17,6 +17,7 @@ public class BoolIndicator extends JPanel
 	
 	public BoolIndicator(String name, String onState, String offState)
 	{
+		super();
 		this.states = new String[2];
 		this.n = name;
 		this.states[0] = onState;
