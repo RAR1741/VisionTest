@@ -96,6 +96,7 @@ public class TowerTracker {
 	public static BoolIndicator reloadIndicator;
 	public static StringChooser choose;
 	public static String[] choice = {"yes", "no", "maybe" };
+	public static IntChooser ints;
 
 	public static void main(String[] args) {
 //		Initialize the matrixes
@@ -136,17 +137,9 @@ public class TowerTracker {
 
 		choose = new StringChooser("choose", choice, station);
 		frame.add(choose);
-//	    reloadinfo = new JPanel();
-//	    reloadinfo.setLayout(new BoxLayout(reloadinfo, BoxLayout.X_AXIS));
-//	    reloadinfo.setAlignmentY(JPanel.TOP_ALIGNMENT);
-//	    reloadinfo.setAlignmentX(JPanel.LEFT_ALIGNMENT);
-//	    reloadLabel = new JLabel("Reload: ");
-//	    reloadinfo.add(reloadLabel);
-//	    reload = new JLabel("Connecting");
-//	    reload.setForeground(Color.blue);
-//	    reload.setBackground(Color.blue);
-//	    reloadinfo.add(reload);
-//	    frame.add(reloadinfo);
+
+		ints = new IntChooser("ints", 0, 0, 10, station);
+		frame.add(ints);
 
 //		Main loop
 		while(shouldRun){
