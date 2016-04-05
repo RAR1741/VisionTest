@@ -299,7 +299,7 @@ public class TowerTracker {
 //				reload.setText("Ready");
 //				reload.setForeground(Color.green);
 //			}
-			reloadIndicator.Update();
+			//reloadIndicator.Update();
 			
 //			Force the display frame to update
 			//SwingUtilities.updateComponentTreeUI(frame);

@@ -7,9 +7,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.tables.ITable;
+import edu.wpi.first.wpilibj.tables.ITableListener;
 
 @SuppressWarnings("serial")
-public class BoolIndicator extends JPanel 
+public class BoolIndicator extends JPanel implements ITableListener
 {
 	private JLabel label;
 	private JLabel indicator;
@@ -53,13 +55,12 @@ public class BoolIndicator extends JPanel
 	public void UseNetworkTable(NetworkTable table)
 	{
 		t = table;
+		t.addTableListener(n, this, true);
 	}
-	
-	public void Update()
+
+	@Override
+	public void valueChanged(ITable arg0, String arg1, Object arg2, boolean arg3)
 	{
-		if(this.t != null)
-		{
-			this.Set(this.t.getBoolean(this.n, false));
-		}
+		this.Set(this.t.getBoolean(this.n, false));
 	}
 }
