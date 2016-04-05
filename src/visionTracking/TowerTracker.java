@@ -94,6 +94,8 @@ public class TowerTracker {
 	public static JPanel reloadinfo;
 	public static JLabel fpsLabel;
 	public static BoolIndicator reloadIndicator;
+	public static StringChooser choose;
+	public static String[] choice = {"yes", "no", "maybe" };
 
 	public static void main(String[] args) {
 //		Initialize the matrixes
@@ -116,7 +118,7 @@ public class TowerTracker {
 	    frame.setTitle("Vision Tracking");
 	    TowerTracker.class.getResource("images/target.png");
 		try {
-			frame.setIconImage(ImageIO.read(TowerTracker.class.getResource("images/target.png")));
+			frame.setIconImage(ImageIO.read(TowerTracker.class.getResource("../images/target.png")));
 		} catch (IOException e1) {
 			System.out.println("oh no");
 		}
@@ -133,6 +135,9 @@ public class TowerTracker {
 		reloadIndicator = new BoolIndicator("Reload", "Ready", "Reload");
 		reloadIndicator.UseNetworkTable(station);
 		frame.add(reloadIndicator);
+
+		choose = new StringChooser("choose", choice, station);
+		frame.add(choose);
 //	    reloadinfo = new JPanel();
 //	    reloadinfo.setLayout(new BoxLayout(reloadinfo, BoxLayout.X_AXIS));
 //	    reloadinfo.setAlignmentY(JPanel.TOP_ALIGNMENT);
