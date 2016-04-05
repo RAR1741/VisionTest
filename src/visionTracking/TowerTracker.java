@@ -94,8 +94,6 @@ public class TowerTracker {
 	public static JPanel reloadinfo;
 	public static JLabel fpsLabel;
 	public static BoolIndicator reloadIndicator;
-	public static StringChooser choose;
-	public static String[] choice = {"yes", "no", "maybe" };
 
 	public static void main(String[] args) {
 //		Initialize the matrixes
@@ -127,17 +125,10 @@ public class TowerTracker {
 	    fpsLabel = new JLabel("Connecting...");
 	    frame.add(fpsLabel);
 
-	    lbl = new JLabel();
-	    lbl.setAlignmentX(JLabel.LEFT_ALIGNMENT);
-		lbl.setAlignmentY(JLabel.TOP_ALIGNMENT);
-		frame.add(lbl);
-
 		reloadIndicator = new BoolIndicator("Reload", "Ready", "Reload");
 		reloadIndicator.UseNetworkTable(station);
 		frame.add(reloadIndicator);
 
-		choose = new StringChooser("choose", choice, station);
-		frame.add(choose);
 //	    reloadinfo = new JPanel();
 //	    reloadinfo.setLayout(new BoxLayout(reloadinfo, BoxLayout.X_AXIS));
 //	    reloadinfo.setAlignmentY(JPanel.TOP_ALIGNMENT);
