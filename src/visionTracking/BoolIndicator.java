@@ -1,3 +1,5 @@
+package visionTracking;
+
 import java.awt.Color;
 
 import javax.swing.BoxLayout;
