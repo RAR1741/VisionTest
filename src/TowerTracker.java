@@ -108,7 +108,7 @@ public class TowerTracker {
 //		Initialize the GUI
 	    frame=new JFrame();
 	    frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
-	    frame.setSize(250, 250);
+	    frame.setSize(300, 300);
 	    frame.setLocation(1000, 0);
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setTitle("Vision Tracking");
