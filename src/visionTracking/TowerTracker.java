@@ -51,7 +51,7 @@ public class TowerTracker {
 	static{ 
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		NetworkTable.setClientMode();
-		NetworkTable.setIPAddress("roborio-1741-frc.local");
+		NetworkTable.setIPAddress("127.0.0.1");
 	}
 //	Constants for RGB values
 	public static final Scalar 
@@ -94,6 +94,8 @@ public class TowerTracker {
 	public static JPanel reloadinfo;
 	public static JLabel fpsLabel;
 	public static BoolIndicator reloadIndicator;
+	public static StringChooser choose;
+	public static String[] choice = {"yes", "no", "maybe" };
 
 	public static void main(String[] args) {
 //		Initialize the matrixes
@@ -122,6 +124,9 @@ public class TowerTracker {
 		}
 	    frame.setVisible(true);
 
+	    lbl = new JLabel();
+	    frame.add(lbl);
+
 	    fpsLabel = new JLabel("Connecting...");
 	    frame.add(fpsLabel);
 
@@ -129,6 +134,8 @@ public class TowerTracker {
 		reloadIndicator.UseNetworkTable(station);
 		frame.add(reloadIndicator);
 
+		choose = new StringChooser("choose", choice, station);
+		frame.add(choose);
 //	    reloadinfo = new JPanel();
 //	    reloadinfo.setLayout(new BoxLayout(reloadinfo, BoxLayout.X_AXIS));
 //	    reloadinfo.setAlignmentY(JPanel.TOP_ALIGNMENT);
@@ -149,7 +156,7 @@ public class TowerTracker {
 				videoCapture = new VideoCapture();
 				
 				System.out.println("Opening stream...");
-				videoCapture.open("http://axis-1741.local/mjpg/video.mjpg");
+				videoCapture.open("http://axis1741.local/mjpg/video.mjpg");
 				
 				System.out.println("Checking connection...");
 //				Wait until it is opened
@@ -195,8 +202,9 @@ public class TowerTracker {
 			temp = lastTime;
 			if(((lastTime = System.currentTimeMillis()) - temp) != 0)
 			{
-				fps = 1000/((lastTime = System.currentTimeMillis()) - temp); //This way, lastTime is assigned and used at the same time.
+				fps = 1000.0F/((lastTime = System.currentTimeMillis()) - temp); //This way, lastTime is assigned and used at the same time.
 			}
+			fps = Math.round(fps * 100.0) / 100.0;
 			fpsLabel.setText("FPS: " + Double.toString(fps));
 			//System.out.println(fps);
 			
@@ -301,7 +309,7 @@ public class TowerTracker {
 			reloadIndicator.Update();
 			
 //			Force the display frame to update
-			SwingUtilities.updateComponentTreeUI(frame);
+			//SwingUtilities.updateComponentTreeUI(frame);
 			
 //			Write the output sting to the network table
 			table.putString("targets", output);

@@ -1,5 +1,6 @@
 package visionTracking;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -23,6 +24,7 @@ public class StringChooser extends JPanel implements ActionListener
 	public void actionPerformed(ActionEvent e) 
 	{
 		t.putString(n, (String)chooser.getSelectedItem());
+		//System.out.println((String)chooser.getSelectedItem());
 	}
 
 	public StringChooser(String name, String[] choices, NetworkTable table)
@@ -37,6 +39,10 @@ public class StringChooser extends JPanel implements ActionListener
 		label = new JLabel(name + ": ");
 		this.add(label);
 		chooser = new JComboBox<String>(c);
+		chooser.setSize(new Dimension(100,20));
+		chooser.setSelectedIndex(0);
 		this.add(chooser);
+		chooser.addActionListener(this);
+		t.putString(n, (String)chooser.getSelectedItem());
 	}
 }
