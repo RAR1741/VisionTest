@@ -54,6 +54,9 @@ public class BoolIndicator extends JPanel
 	
 	public void Update()
 	{
-		this.Set(this.t.getBoolean(this.n, false));
+		if(this.t != null)
+		{
+			this.Set(this.t.getBoolean(this.n, false));
+		}
 	}
 }
