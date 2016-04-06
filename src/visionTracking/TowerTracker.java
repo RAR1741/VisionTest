@@ -97,6 +97,7 @@ public class TowerTracker {
 	public static StringChooser choose;
 	public static String[] choice = {"yes", "no", "maybe" };
 	public static IntChooser ints;
+	public static BoolChooser bchoose;
 
 	public static void main(String[] args) {
 //		Initialize the matrixes
@@ -140,6 +141,9 @@ public class TowerTracker {
 
 		ints = new IntChooser("ints", 0, 0, 10, station);
 		frame.add(ints);
+		
+		bchoose = new BoolChooser("bools", "yes", "no", station);
+		frame.add(bchoose);
 
 //		Main loop
 		while(shouldRun){
