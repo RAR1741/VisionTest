@@ -1,7 +1,5 @@
 package visionTracking;
 
-import java.awt.Color;
-import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -11,13 +9,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -91,9 +87,6 @@ public class TowerTracker {
 	public static JFrame frame;
 	public static JLabel lbl;
 	public static ImageIcon image;
-	public static JLabel reloadLabel;
-	public static JLabel reload;
-	public static JPanel reloadinfo;
 	public static JLabel fpsLabel;
 	public static BoolIndicator reloadIndicator;
 	public static StringChooser choose;
