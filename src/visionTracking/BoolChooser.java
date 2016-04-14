@@ -22,6 +22,8 @@ public class BoolChooser extends JPanel implements ActionListener
 	public void actionPerformed(ActionEvent arg0) 
 	{
 		t.putBoolean(n, arg0.getSource().equals(b1));
+		b2.setEnabled(arg0.getSource().equals(b1));
+		b1.setEnabled(arg0.getSource().equals(b2));
 	}
 
 	public BoolChooser(String name, String label1, NetworkTable table)

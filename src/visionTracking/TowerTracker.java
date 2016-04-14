@@ -1,6 +1,5 @@
 package visionTracking;
 
-import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -15,7 +14,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -89,15 +87,15 @@ public class TowerTracker {
 	public static JFrame frame;
 	public static JLabel lbl;
 	public static ImageIcon image;
-	public static JLabel reloadLabel;
-	public static JLabel reload;
-	public static JPanel reloadinfo;
 	public static JLabel fpsLabel;
 	public static BoolIndicator reloadIndicator;
 	public static StringChooser choose;
 	public static String[] choice = {"yes", "no", "maybe" };
 	public static IntChooser ints;
 	public static BoolChooser bchoose;
+	public static JPanel dash;
+	public static JPanel lColumn;
+	public static JPanel rColumn;
 
 	public static void main(String[] args) {
 //		Initialize the matrixes
@@ -124,26 +122,41 @@ public class TowerTracker {
 		} catch (IOException e1) {
 			System.out.println("oh no");
 		}
-	    frame.setVisible(true);
-
 	    lbl = new JLabel();
+	    lbl.setAlignmentX(0.0F);
 	    frame.add(lbl);
 
+		dash = new JPanel();
+		dash.setLayout(new BoxLayout(dash, BoxLayout.X_AXIS));
+		dash.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+		dash.setAlignmentY(0.0F);
+		lColumn = new JPanel();
+		lColumn.setLayout(new BoxLayout(lColumn, BoxLayout.Y_AXIS));
+		lColumn.setAlignmentY(JPanel.TOP_ALIGNMENT);
+		dash.add(lColumn);
+		rColumn = new JPanel();
+		rColumn.setLayout(new BoxLayout(rColumn, BoxLayout.Y_AXIS));
+		rColumn.setAlignmentY(JPanel.TOP_ALIGNMENT);
+		dash.add(rColumn);
+	    frame.add(dash);
+
 	    fpsLabel = new JLabel("Connecting...");
-	    frame.add(fpsLabel);
+	    lColumn.add(fpsLabel);
 
 		reloadIndicator = new BoolIndicator("Reload", "Ready", "Reload");
 		reloadIndicator.UseNetworkTable(station);
-		frame.add(reloadIndicator);
+		lColumn.add(reloadIndicator);
 
 		choose = new StringChooser("choose", choice, station);
-		frame.add(choose);
+		lColumn.add(choose);
 
 		ints = new IntChooser("ints", 0, 0, 10, station);
-		frame.add(ints);
+		lColumn.add(ints);
 		
 		bchoose = new BoolChooser("bools", "yes", "no", station);
-		frame.add(bchoose);
+		rColumn.add(bchoose);
+
+		frame.setVisible(true);
 
 //		Main loop
 		while(shouldRun){
