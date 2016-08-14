@@ -49,7 +49,7 @@ public class TowerTracker {
 	static{ 
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		NetworkTable.setClientMode();
-		NetworkTable.setIPAddress("127.0.0.1");
+		NetworkTable.setIPAddress("roborio-1741-frc.local");
 	}
 //	Constants for RGB values
 	public static final Scalar 
@@ -166,7 +166,7 @@ public class TowerTracker {
 				videoCapture = new VideoCapture();
 				
 				System.out.println("Opening stream...");
-				videoCapture.open("http://axis1741.local/mjpg/video.mjpg");
+				videoCapture.open("http://axis-1741.local/mjpg/video.mjpg");
 				
 				System.out.println("Checking connection...");
 //				Wait until it is opened
@@ -235,14 +235,14 @@ public class TowerTracker {
 			for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
 				MatOfPoint matOfPoint = (MatOfPoint) iterator.next();
 				Rect rec = Imgproc.boundingRect(matOfPoint);
-				if(rec.height < 30 || rec.width < 30){
+				if(rec.height < 20 || rec.width < 30){
 					iterator.remove();
 					drawContour(matOriginal, rec, BLUE);
 					continue;
 				}
 				
 				float aspect = (float)rec.width/(float)rec.height;
-				if(aspect > 2.0 || aspect < 0.75){
+				if(aspect > 3 || aspect < 0.75){
 					drawContour(matOriginal, rec, YELLOW);
 					iterator.remove();
 				}
